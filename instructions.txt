@@ -1,0 +1,8 @@
+Start - 
+arduino-cli upload -p /dev/cu.usbserial-0001 \
+  --fqbn esp32:esp32:esp32 \
+  arduino/waveform_eeg_bridge/
+
+Python - 
+.venv/bin/streamlit run app.py
+

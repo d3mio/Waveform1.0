@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# ──────────────────────────────────────────────────
+#  WaveForm project aliases
+#  Source this once:  source .waveform_env
+#  Or add to ~/.zshrc:
+#    source /Users/disasgamage/Documents/GitHub/Waveform-1.0/.waveform_env
+# ──────────────────────────────────────────────────
+
+WAVEFORM_DIR="/Users/disasgamage/Documents/GitHub/Waveform-1.0"
+
+alias start="$WAVEFORM_DIR/waveform.sh start"
+alias stop="$WAVEFORM_DIR/waveform.sh stop"
+
+echo "✅ WaveForm aliases loaded.  Commands: start · stop"
