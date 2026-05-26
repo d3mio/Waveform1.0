@@ -1,8 +1,41 @@
-Start - 
-arduino-cli upload -p /dev/cu.usbserial-0001 \
-  --fqbn esp32:esp32:esp32 \
-  arduino/waveform_eeg_bridge/
+══ WaveForm EEG – Quick Start ══════════════════════════════════════
 
-Python - 
-.venv/bin/streamlit run app.py
+STEP 1 – Edit WiFi credentials in the sketch (ONE TIME)
+  Open: arduino/waveform_eeg_bridge/waveform_eeg_bridge.ino
+  Find lines:
+    #define WIFI_SSID   "YOUR_WIFI_NAME"
+    #define WIFI_PASS   "YOUR_WIFI_PASSWORD"
+  Replace with your actual WiFi name and password.
 
+STEP 2 – Flash ESP32 via USB (ONE TIME)
+  Plug ESP32 into USB. Find the correct port:
+    ls /dev/cu.*
+  Then flash:
+    arduino-cli lib install "Adafruit ADS1X15" "Adafruit BusIO"
+    arduino-cli upload -p /dev/cu.<YOUR_PORT> --fqbn esp32:esp32:esp32 arduino/waveform_eeg_bridge/
+
+  Note: BluetoothSerial and WiFi are built-in – no extra installs.
+
+STEP 3 – After flashing, find the ESP32's IP address
+  Open the serial monitor after flashing:
+    arduino-cli monitor -p /dev/cu.<YOUR_PORT> -c baudrate=115200
+  It will print something like:
+    WiFi IP: 192.168.1.42
+    TCP port: 5005
+
+STEP 4 – Connect wirelessly (no USB ever again)
+  Option A – WiFi:
+    In the dashboard sidebar → Connection Mode: 🌐 WiFi
+    Enter the ESP32's IP → Connect WiFi
+
+  Option B – Bluetooth:
+    1. Pair "WaveForm-EEG" in macOS Bluetooth settings.
+    2. Sidebar → Connection Mode: 📡 Bluetooth → Connect Bluetooth
+
+  Option C – USB Serial:
+    Sidebar → Connection Mode: 🔌 USB Serial → select port → Connect USB
+
+STEP 5 – Run the dashboard
+  .venv/bin/streamlit run app.py
+
+══════════════════════════════════════════════════════════════════

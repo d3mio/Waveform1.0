@@ -37,39 +37,36 @@ banner() {
 }
 
 cmd_start() {
-  echo -e "${BOLD}[1/3]${RESET} 🔌 Uploading sketch to ESP32..."
+  echo -e "${BOLD}[1/3]${RESET} 🔨 Compiling and 🔌 Uploading to ESP32..."
   echo -e "      Port: ${CYAN}$PORT${RESET} · Board: ${CYAN}$FQBN${RESET}"
   echo ""
 
-  # Attempt upload; if port is busy, wait 2 s and retry once
-  arduino-cli upload \
-    -p "$PORT" \
-    --fqbn "$FQBN" \
-    "$SCRIPT_DIR/$SKETCH" 2>&1
-
-  local exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    echo -e "\n${YELLOW}⚠ First attempt failed. Retrying in 3 seconds...${RESET}"
-    sleep 3
-    arduino-cli upload \
-      -p "$PORT" \
-      --fqbn "$FQBN" \
-      "$SCRIPT_DIR/$SKETCH" 2>&1
-    exit_code=$?
-  fi
-
-  if [ $exit_code -ne 0 ]; then
-    echo -e "\n${RED}✗ Upload failed.${RESET}"
-    echo "  Try: hold the BOOT button on the ESP32, then run start again."
+  # Step A: Compile (ensure binaries are fresh)
+  arduino-cli compile --fqbn "$FQBN" "$SCRIPT_DIR/$SKETCH" &>/dev/null
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Compilation failed. Check your Arduino code.${RESET}"
     return 1
   fi
 
-  echo -e "\n${GREEN}✓ Sketch uploaded successfully!${RESET}"
+  # Step B: Upload (Standard arduino-cli)
+  echo "      Uploading..."
+  echo -e "      ${YELLOW}Note: If it hangs on 'Connecting...', hold the BOOT button on your ESP32.${RESET}"
+  arduino-cli upload -p "$PORT" --fqbn "$FQBN" "$SCRIPT_DIR/$SKETCH" --upload-property upload.speed=115200
+
+  if [ $? -ne 0 ]; then
+    echo -e "\n${RED}✗ Automatic upload failed.${RESET}"
+    echo "  Please ensure the ESP32 is connected and not in use by another app."
+    return 1
+  fi
+
+  echo -e "\n${GREEN}✓ System ready!${RESET}"
   echo ""
-  echo -e "${BOLD}[2/3]${RESET} ⏳ Waiting for ESP32 to boot (2 s)..."
+  echo -e "${BOLD}[2/3]${RESET} ⏳ Waiting for ESP32 to boot..."
   sleep 2
 
   echo -e "${BOLD}[3/3]${RESET} 🚀 Starting WaveForm dashboard..."
+  pkill -f "streamlit run $APP" 2>/dev/null
+  
   "$SCRIPT_DIR/$VENV/streamlit" run "$SCRIPT_DIR/$APP" \
     --server.headless false \
     --server.port 8501 \
@@ -85,7 +82,6 @@ cmd_start() {
     echo -e "  Sidebar → Signal Source → 🔌 Arduino (Serial) → $PORT → Connect"
     echo ""
     echo -e "  ${YELLOW}Type 'stop' and Enter to shut everything down.${RESET}"
-    # Listen for stop command
     while true; do
       read -r input
       if [ "$input" = "stop" ]; then
@@ -97,6 +93,7 @@ cmd_start() {
     echo -e "${RED}✗ Dashboard failed to start. Check /tmp/waveform_streamlit.log${RESET}"
   fi
 }
+
 
 cmd_stop() {
   echo -e "\n${BOLD}Stopping WaveForm...${RESET}"
@@ -137,9 +134,17 @@ interactive_mode() {
 cd "$SCRIPT_DIR" || exit 1
 
 case "${1:-}" in
-  start) banner; cmd_start ;;
-  stop)  cmd_stop ;;
-  "")    banner; interactive_mode ;;
+  start)
+    banner
+    cmd_start
+    ;;
+  stop)
+    cmd_stop
+    ;;
+  "")
+    banner
+    interactive_mode
+    ;;
   *)
     echo "Usage: $0 [start|stop]"
     exit 1

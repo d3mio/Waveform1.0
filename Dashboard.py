@@ -9,11 +9,26 @@ import time
 # ======================
 # CONFIG
 # ======================
-PORT = 'COM3'   # Change to your port
+import glob
+import sys
+
+# Auto-detect Mac Bluetooth port if on Mac
+PORT = 'COM3' 
+if sys.platform == "darwin":
+    candidates = glob.glob("/dev/cu.*Connect*") + glob.glob("/dev/cu.*WaveForm*")
+    if candidates:
+        PORT = candidates[0]
+        print(f"Auto-selected Bluetooth Port: {PORT}")
+    else:
+        # Fallback to serial
+        ports = glob.glob("/dev/cu.usbserial*") or glob.glob("/dev/cu.SLAB*")
+        if ports: PORT = ports[0]
+
 FS = 200
 BUFFER_SIZE = 1000
 
-ser = serial.Serial(PORT, 115200)
+print(f"Connecting to {PORT}...")
+ser = serial.Serial(PORT, 115200, timeout=1)
 
 data_buffer = []
 start_time = time.time()
