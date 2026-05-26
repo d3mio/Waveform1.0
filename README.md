@@ -1,8 +1,24 @@
 # ⬡ WaveForm — EEG Brain Monitor
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+[![Hardware](https://img.shields.io/badge/Hardware-ESP32%20%2B%20ADS1115%20%2B%20AD8232-success)](https://github.com/d3mio/Waveform1.0)
+
 > **Real-time EEG acquisition, signal processing, ML inference, and session logging — from electrode to dashboard.**
 
-WaveForm is a full-stack brain-computer interface (BCI) system built on an **ESP32 + ADS1115 + AD8232** hardware stack, streamed over USB serial to a **Streamlit** web dashboard. It decodes five EEG frequency bands in real-time, infers mental state via three scikit-learn classifiers, and logs every session to a local **SQLite** database.
+![WaveForm EEG Dashboard Mockup](waveform_dashboard_mockup.png)
+
+WaveForm is a full-stack brain-computer interface (BCI) system built on an **ESP32 + ADS1115 + AD8232** hardware stack, streamed over USB serial or wireless network to a **Streamlit** web dashboard. It decodes five EEG frequency bands in real-time, infers mental state via three scikit-learn classifiers, and logs every session to a local **SQLite** database or cloud **Supabase** instance.
+
+---
+
+### Live Demo & Deployments
+- **Live Interactive Demo**: [waveform-eeg.streamlit.app](https://waveform-eeg.streamlit.app) (Running in simulation/demo mode)
+- **Deployment Platform**: Deployed seamlessly on [Streamlit Community Cloud](https://share.streamlit.io/) and accessible on any device.
+
+### Repository Topics & Tags
+`eeg` · `brain-computer-interface` · `esp32` · `streamlit` · `signal-processing` · `scikit-learn` · `machine-learning` · `biosensors` · `medical-devices` · `python` · `firmware` · `data-visualization`
 
 ---
 
